@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import Button from '../../../shared/components/UI/Button/Button';
 import Form from '../../../shared/components/Form/Form';
 import FormInput from '../../../shared/components/UI/FormInput/FormInput';
+import HeaderButton from '../../../shared/components/CustomHeaderButton/CustomHeaderButton';
 
 import { checkInputValidity } from '../../../shared/utility';
 
@@ -26,7 +28,17 @@ class AddProductScreen extends Component {
             size={28}
             color="white"
             onPress={navigation.getParam('addProduct')}
-        />
+        />,
+        headerLeft: () => (  // place star icon to the right of the header
+            <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                <Item
+                    title="Side Drawer Menu"
+                    iconName={Platform.OS === "android" ? 'md-menu' : 'ios-menu'}
+                    onPress={() => navigation.toggleDrawer()}
+                    color="#fff"
+                />
+            </HeaderButtons>
+        )
     });
 
     state = {

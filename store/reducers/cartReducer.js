@@ -1,4 +1,4 @@
-import { PRODUCTS } from '../../data/product';
+//import { PRODUCTS } from '../../data/product';
 import { ADD_ITEM_TO_CART, DELETE_ITEM_FROM_CART, CLEAR_CART } from '../actions/actionTypes';
 import { updateState } from '../utility';
 
@@ -13,12 +13,12 @@ const initialState = {  // set an initial state
 };
 
 const add_to_cart = (state, action) => {
-    const { productId, userId } = action;
+    const { productId, userId, allProducts } = action;
 
     // try to find if "productId" and "userId" are valid and also they exist or not
-    if (!productId || !userId) return;
+    if (!productId || !userId) return null;
 
-    const existingProduct = PRODUCTS.find(prod => prod.id === productId);
+    const existingProduct = allProducts.find(prod => prod.id === productId);  // What if "previousOrders" is empty?!
     if (!existingProduct) return;
 
     const updatedCart = { ...state.cart };  // first, copy the existing "cart" state for immutable manipulation purpose
@@ -66,12 +66,12 @@ const add_to_cart = (state, action) => {
 };
 
 const delete_from_cart = (state, action) => {
-    const { productId, userId } = action;
+    const { productId, userId, allProducts } = action;
 
     // try to find if "productId" and "userId" are valid and also they exist or not
     if (!productId || !userId) return;
 
-    const existingProduct = PRODUCTS.find(prod => prod.id === productId);
+    const existingProduct = allProducts.find(prod => prod.id === productId);  // What if "previousOrders" is empty?!
     if (!existingProduct) return;
 
     const updatedCart = { ...state.cart };  // first, copy the existing "cart" state for immutable manipulation purpose

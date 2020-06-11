@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Image, Platform } from 'react-native';
+import { View, FlatList, Image, Platform, ActivityIndicator } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import Button from '../../../shared/components/UI/Button/Button';
@@ -9,6 +9,7 @@ import HeaderButton from '../../../shared/components/CustomHeaderButton/CustomHe
 import Text from '../../../shared/components/UI/Text/Text';
 
 import { styles } from './styles';
+import { Colors } from '../../../shared/utility';
 
 import { fetchProducts } from '../../../store/actions/productActions';
 import { addToCart } from '../../../store/actions/cartActions';
@@ -28,7 +29,7 @@ class ProductsOverviewScreen extends Component {
     })
 
     componentDidMount() {
-        this.props.onFetchAllProducts();
+        this.props.onFetchProducts();
     }
 
     navigateToProductDetailHandler = id => {
@@ -40,8 +41,8 @@ class ProductsOverviewScreen extends Component {
         })
     }
 
-    addProductToCartHandler = (prodId, userId) => {
-        this.props.onAddToCart(prodId, userId);
+    addProductToCartHandler = (allProducts, prodId, userId) => {
+        this.props.onAddToCart(allProducts, prodId, userId);
     }
 
     renderProductItem = ({ item }) => {
@@ -57,28 +58,56 @@ class ProductsOverviewScreen extends Component {
                 </View>
                 <View style={buttonContainer}>
                     <Button label="View Details" onClick={this.navigateToProductDetailHandler.bind(this, item.id)} />
-                    <Button label="Add to Cart" onClick={this.addProductToCartHandler.bind(this, item.id, item.userId)} />
+                    <Button label="Add to Cart" onClick={this.addProductToCartHandler.bind(this, this.props.allProducts, item.id, item.userId)} />
                 </View>
             </Card>
         );
     }
 
     render() {
-        return this.props.allProducts && <FlatList
-            data={this.props.allProducts}
-            renderItem={this.renderProductItem}
-        />;
+        const { allProducts, loading, onFetchProducts, error } = this.props;
+
+        if (error)
+            return <View style={styles.loading}>
+                <Text style={styles.text}>Error while loading products</Text>
+                <Button label="TRY AGAIN" onClick={onFetchProducts} />
+            </View>;
+
+        let content = (
+            <View style={styles.loading}>
+                <ActivityIndicator color={Colors.text.primary} size="large" />
+            </View>
+        );
+
+        if (!loading && (!allProducts || allProducts.length === 0)) {  // no products fetched from database
+            content = (
+                <View style={styles.loading}>
+                    <Text style={styles.text}>No products available</Text>
+                </View>
+            );
+        } else if (!loading) {
+            content = <FlatList
+                keyExtractor={item => item.id.toString() + Math.random().toString() * Math.random().toString()}
+                onRefresh={onFetchProducts}  // RefreshControl for "Pull to Refresh" functionality. If "Pull to Refresh" action is taken, products will be reloaded.
+                refreshing={loading}        // required property for "onRefresh"
+                data={allProducts}
+                renderItem={this.renderProductItem}
+            />;
+        }
+        return content;
     }
 }
 
 
 const mapStateToProps = state => ({
-    allProducts: state.rootProducts.allProducts
+    allProducts: state.rootProducts.allProducts,
+    error: state.rootProducts.error,
+    loading: state.rootProducts.loading
 });
 
 const mapDispatchToProps = dispatch => ({
-    onFetchAllProducts: () => dispatch(fetchProducts()),
-    onAddToCart: (productId, userId) => dispatch(addToCart(productId, userId))
+    onFetchProducts: () => dispatch(fetchProducts()),
+    onAddToCart: (allProducts, productId, userId) => dispatch(addToCart(allProducts, productId, userId))
 });
 
 

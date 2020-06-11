@@ -10,9 +10,10 @@ import Text from '../../../shared/components/UI/Text/Text';
 import Button from '../../../shared/components/UI/Button/Button';
 
 import { deleteFromCart, clearCart } from '../../../store/actions/cartActions';
-import { addOrders } from '../../../store/actions/orderActions';
+import { addOrder } from '../../../store/actions/orderActions';
 
 import { styles } from './styles';
+
 
 class CartScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -28,8 +29,8 @@ class CartScreen extends Component {
         )
     });
 
-    deleteCartItemHandler = (productId, userId) => {
-        this.props.onDeleteFromCart(productId, userId);
+    deleteCartItemHandler = (allProducts, productId, userId) => {
+        this.props.onDeleteFromCart(allProducts, productId, userId);
     }
 
     orderWarningHandler = (userId, products) => {
@@ -52,7 +53,7 @@ class CartScreen extends Component {
 
     render() {
         const { button, card, text, iconContainer } = styles;
-        const { cart } = this.props;
+        const { cart, allProducts } = this.props;
 
         return (
             <ScrollView>
@@ -62,7 +63,6 @@ class CartScreen extends Component {
                         style={button}
                         disabled={!cart || cart.items.products.length === 0 ? true : false}
                         label="Order Now"
-                        //onClick={this.addToOrdersHandler.bind(this, cart.userId, cart.items.products)}
                         onClick={this.orderWarningHandler.bind(this, cart.userId, cart.items.products)}
                     />
                 </Card>
@@ -74,7 +74,7 @@ class CartScreen extends Component {
                                 <Ionicons
                                     name={Platform.OS === "android" ? "md-trash" : "ios-trash"}
                                     size={24} color={Platform.OS === "android" ? "black" : ""}
-                                    onPress={this.deleteCartItemHandler.bind(this, cartItem.product.id, cart.userId)}
+                                    onPress={this.deleteCartItemHandler.bind(this, allProducts, cartItem.product.id, cart.userId)}
                                 />
                             </View>
                         </Card>
@@ -87,13 +87,15 @@ class CartScreen extends Component {
 
 
 const mapStateToProps = state => ({
-    cart: state.rootCart.cart
+    allProducts: state.rootProducts.allProducts,
+    cart: state.rootCart.cart,
+    orders: state.rootOrders.orders
 });
 
 const mapDispatchToProps = dispatch => ({
-    onDeleteFromCart: (productId, userId) => dispatch(deleteFromCart(productId, userId)),
+    onDeleteFromCart: (allProducts, productId, userId) => dispatch(deleteFromCart(allProducts, productId, userId)),
     onClearCart: userId => dispatch(clearCart(userId)),
-    onAddOrders: products => dispatch(addOrders(products))
+    onAddOrders: newOrders => dispatch(addOrder(newOrders))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CartScreen);

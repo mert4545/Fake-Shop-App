@@ -31,5 +31,10 @@ export const styles = StyleSheet.create({
         color: '#000',
         fontFamily: 'open-sans-bold',
         fontSize: 22
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

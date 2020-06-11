@@ -1,4 +1,4 @@
-import axios from '../../axios/axios-products';
+import axios from '../../axios/axios-shop';
 import { FETCH_PRODUCTS_FAIL, FETCH_PRODUCTS_START, FETCH_PRODUCTS_SUCCESS, ADD_PRODUCT_FAIL, ADD_PRODUCT_START, ADD_PRODUCT_SUCCESS } from '../actions/actionTypes';
 
 // ========================== DEFINE ACTION CREATORS ==========================
@@ -36,14 +36,17 @@ export const fetchProducts = () => {
         dispatch(fetchProductsStart());
 
         try {
-            const response = await axios({
-                url: '/products',
+            const configOpts = {
+                url: '/products.json',
                 method: 'GET'
-            });
-            const jsonResponse = response.json();
+            };
+            const response = await axios(configOpts);
 
-            console.log(jsonResponse);
-            dispatch(fetchProductsSuccess(jsonResponse));
+            const products = [];
+            for (const key in response.data) {
+                products.push(response.data[key]);
+            }
+            dispatch(fetchProductsSuccess(products));
         } catch (err) {
             dispatch(fetchProductsFail());
         }
@@ -55,18 +58,14 @@ export const addProduct = product => {
         dispatch(addProductStart());
 
         try {
-            const response = await axios({
-                url: `/products/${product.id}`,
-                method: 'POST',
+            const configOpts = {
                 headers: {
                     'Content-type': 'application/json'
-                },
-                data: product
-            });
-            const jsonResponse = response.json();
+                }
+            };
+            const response = await axios.post('/products.json', product, configOpts);
 
-            console.log(jsonResponse);
-            dispatch(addProductSuccess(jsonResponse));
+            dispatch(addProductSuccess(JSON.parse(response.config.data)));
         } catch (err) {
             dispatch(addProductFail());
         }

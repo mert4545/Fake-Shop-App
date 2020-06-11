@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { AppLoading } from 'expo';
 
@@ -21,7 +22,7 @@ const rootReducer = combineReducers({
   rootOrders: ordersReducer
 });
 
-const store = createStore(rootReducer, applyMiddleware(thunk));
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
 
 class App extends Component {
   state = {

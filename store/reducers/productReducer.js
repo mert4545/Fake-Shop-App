@@ -1,36 +1,65 @@
-import { PRODUCTS } from '../../data/product';
-import { FETCH_ALL_PRODUCTS, ADD_PRODUCT } from '../actions/actionTypes';
+import { FETCH_PRODUCTS_FAIL, FETCH_PRODUCTS_START, FETCH_PRODUCTS_SUCCESS, ADD_PRODUCT_FAIL, ADD_PRODUCT_START, ADD_PRODUCT_SUCCESS } from '../actions/actionTypes';
 import { updateState } from '../utility';
 
 const initialState = {  // set an initial state
     allProducts: [],
-    dummyAllProducts: PRODUCTS   // this state will be removed after interacting with db and fetching PRODUCTS from db. 
-};                               // In that case, in "fetch_all_products" function, "allProducts" will always be updated
-                                // with data fetched from db!!!. Also, look out in Line-21!
+    error: null,
+    loading: false
+};
 
-const fetch_all_products = state => {
+const fetch_products_start = state => {
     return updateState(state, {
-        allProducts: [...state.dummyAllProducts]
+        error: null,
+        loading: true
     });
 };
 
-const add_product = (state, action) => {
-    const addedProduct = action.product;  // get new Product details
-    console.log(addedProduct);
-    const updatedProducts = [...state.dummyAllProducts, addedProduct];  // grab existing state of "allProducts" and add new product to "allProducts"
-
-    PRODUCTS.push(addedProduct);   // !!!!! IMPORTANT!! -- This line will be removed when moving "PRODUCTS" into db. So watch out for update(s)!!
-
+const fetch_products_success = (state, action) => {
+    const fetchedProducts = [...action.products];
     return updateState(state, {
-        dummyAllProducts: updatedProducts
+        allProducts: fetchedProducts,
+        error: null,
+        loading: false
     });
-}
+};
+
+const fetch_products_fail = state => {
+    return updateState(state, {
+        error: true,
+        loading: false
+    });
+};
+
+const add_product_start = state => {
+    return updateState(state, {
+        error: null,
+        loading: true
+    });
+};
+
+const add_product_success = state => {
+    return updateState(state, {
+        error: null,
+        loading: false
+    });
+};
+
+const add_product_fail = state => {
+    return updateState(state, {
+        error: true,
+        loading: false
+    });
+};
 
 
 export const productsReducer = (state = initialState, action) => {
     switch (action.type) {
-        case FETCH_ALL_PRODUCTS: return fetch_all_products(state);
-        case ADD_PRODUCT: return add_product(state, action);
+        case FETCH_PRODUCTS_START: return fetch_products_start(state);
+        case FETCH_PRODUCTS_SUCCESS: return fetch_products_success(state, action);
+        case FETCH_PRODUCTS_FAIL: return fetch_products_fail(state);
+        case ADD_PRODUCT_START: return add_product_start(state);
+        case ADD_PRODUCT_SUCCESS: return add_product_success(state);
+        case ADD_PRODUCT_FAIL: return add_product_fail(state);
         default: return state;  // for the 1st render cycle, the application will fall in this line and "initialState" will be used.
     }
 };

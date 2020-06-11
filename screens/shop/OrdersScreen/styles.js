@@ -12,5 +12,10 @@ export const styles = StyleSheet.create({
     },
     text: {
         color: Colors.text.primary
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
