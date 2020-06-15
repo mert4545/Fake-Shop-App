@@ -32,12 +32,16 @@ const addProductFail = () => ({
 
 // ========================== DEFINE ASYNCHRONOUS ACTIONS ==========================
 export const fetchProducts = () => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         dispatch(fetchProductsStart());
+
+        const token = getState().rootAuth.idToken;
+
+        console.log(`[productActions.js] token: ${token}`);
 
         try {
             const configOpts = {
-                url: '/products.json',
+                url: `/products.json?auth=${token}`,
                 method: 'GET'
             };
             const response = await axios(configOpts);
@@ -54,16 +58,18 @@ export const fetchProducts = () => {
 };
 
 export const addProduct = product => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         dispatch(addProductStart());
 
         try {
+            const token = getState().rootAuth.idToken;
+            const userId = getState().rootAuth.userId;
             const configOpts = {
                 headers: {
                     'Content-type': 'application/json'
                 }
             };
-            const response = await axios.post('/products.json', product, configOpts);
+            const response = await axios.post(`/products.json?auth=${token}`, product, configOpts);
 
             dispatch(addProductSuccess(JSON.parse(response.config.data)));
         } catch (err) {

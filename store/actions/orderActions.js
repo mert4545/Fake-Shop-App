@@ -31,12 +31,14 @@ const addOrderFail = () => ({
 
 // ========================== DEFINE ASYNCHRONOUS ACTIONS ==========================
 export const fetchOrders = () => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         dispatch(fetchOrdersStart());
 
         try {
+            const token = getState().rootAuth.idToken;
+            const userId = getState().rootAuth.userId;
             const configOpts = {
-                url: '/orders.json',
+                url: `/orders/${userId}.json?auth=${token}`,
                 method: 'GET'
             };
             const response = await axios(configOpts);
@@ -54,7 +56,7 @@ export const fetchOrders = () => {
 
 
 export const addOrder = newOrders => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         dispatch(addOrderStart());
 
         try {
@@ -82,8 +84,11 @@ export const addOrder = newOrders => {
                 }
             };
 
+            const token = getState().rootAuth.idToken;
+            const userId = getState().rootAuth.userId;
+
             for (const order of newOrders) {
-                const response = await axios.post('/orders.json', order, configOpts);
+                const response = await axios.post(`/orders/${userId}.json?auth=${token}`, order, configOpts);
                 dispatch(addOrderSuccess(JSON.parse(response.config.data)));
             }
         } catch (err) {

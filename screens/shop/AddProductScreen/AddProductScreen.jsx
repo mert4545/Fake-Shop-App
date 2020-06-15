@@ -73,10 +73,10 @@ class AddProductScreen extends Component {
     }
 
     addNewProductHandler = () => {
-        const { navigation, onAddProduct } = this.props;
+        const { navigation, onAddProduct, userId } = this.props;
         const { title, imageUrl, description, price } = this.state.formInputs;
 
-        const product = new Product(Math.random().toString(), 'u1', title.value, imageUrl.value, description.value, +price.value);
+        const product = new Product(Math.random().toString(), userId, title.value, imageUrl.value, description.value, +price.value);
         onAddProduct(product);
         navigation.navigate('ProductsOverview');
     }
@@ -190,7 +190,8 @@ class AddProductScreen extends Component {
 
 
 const mapStateToProps = state => ({
-    allProducts: state.rootProducts.allProducts
+    allProducts: state.rootProducts.allProducts,
+    userId: state.rootAuth.userId
 });
 
 const mapDispatchToProps = dispatch => ({

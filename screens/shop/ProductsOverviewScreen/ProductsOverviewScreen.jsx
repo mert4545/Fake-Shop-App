@@ -86,8 +86,8 @@ class ProductsOverviewScreen extends Component {
                 </View>
             );
         } else if (!loading) {
-            content = <FlatList
-                keyExtractor={item => item.id.toString() + Math.random().toString() * Math.random().toString()}
+            content = allProducts && <FlatList
+                keyExtractor={item => item.id.toString()}
                 onRefresh={onFetchProducts}  // RefreshControl for "Pull to Refresh" functionality. If "Pull to Refresh" action is taken, products will be reloaded.
                 refreshing={loading}        // required property for "onRefresh"
                 data={allProducts}

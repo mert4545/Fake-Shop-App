@@ -8,11 +8,11 @@ import { styles } from './styles';
 const dismissKeyboardHandler = () => Keyboard.dismiss();
 
 const Form = props => {
-    const { children } = props;
+    const { children, style } = props;
     const { container } = styles;
 
     return (
-        <Card style={container} onPress={dismissKeyboardHandler}>
+        <Card style={!style ? container : { ...container, ...style }} onPress={dismissKeyboardHandler}>
             {children}
         </Card>
     );

@@ -1,16 +1,21 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { useDispatch } from 'react-redux';
+import { Platform, SafeAreaView, View, Button } from 'react-native';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
+import AuthenticateScreen from '../screens/user/AuthenticateScreen/AuthenticateScreen';
 import CartScreen from '../screens/shop/CartScreen/CartScreen';
 import AddProductScreen from '../screens/shop/AddProductScreen/AddProductScreen';
 import OrdersScreen from '../screens/shop/OrdersScreen/OrdersScreen';
 import ProductDetailsScreen from '../screens/shop/ProductDetailsScreen/ProductDetailsScreen';
 import ProductsOverviewScreen from '../screens/shop/ProductsOverviewScreen/ProductsOverviewScreen';
+import StartupScreen from '../screens/StartupScreen/StartupScreen';
+
+import { logout } from '../store/actions/authActions';
 
 import { Colors } from '../shared/utility';
 
@@ -61,6 +66,25 @@ const drawerNavigatorOptions = {  // shared drawer options are stated here
             fontFamily: 'open-sans-bold',
             fontSize: 14
         }
+    },
+    contentComponent: props => {
+        const dispatch = useDispatch();
+
+        return (
+            <View style={{ flex: 1, paddingTop: 20 }}>
+                <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
+                    <DrawerItems {...props} />
+                    <Button
+                        title="Logout"
+                        color={Colors.primary}
+                        onPress={() => {
+                            dispatch(logout());
+                            props.navigation.navigate('Authentication');
+                        }}
+                    />
+                </SafeAreaView>
+            </View>
+        );
     }
 };
 
@@ -109,6 +133,15 @@ const AddProductStackNavigator = createStackNavigator({
     }
 }, defaultNavOpts);
 
+const AuthenticateStackNavigator = createStackNavigator({
+    Authenticate: {
+        screen: AuthenticateScreen,
+        navigationOptions: {
+            headerTitle: 'Authenticate'
+        }
+    }
+}, defaultNavOpts);
+
 
 // ========================== TAB NAVIGATORS DECLARATION ==========================
 
@@ -121,7 +154,7 @@ const ProductsTabNavigator = createMaterialBottomTabNavigator(tabRoutesConfig, a
 
 // ========================== DRAWER NAVIGATORS DECLARATION ==========================
 
-const MainNavigator = createDrawerNavigator({
+const ShopNavigator = createDrawerNavigator({
     ProductsStack: {
         screen: ProductsTabNavigator,
         navigationOptions: {
@@ -146,6 +179,11 @@ const MainNavigator = createDrawerNavigator({
 }, drawerNavigatorOptions);
 
 
+const MainNavigator = createSwitchNavigator({
+    Startup: StartupScreen,
+    Authentication: AuthenticateStackNavigator,
+    Shop: ShopNavigator
+}, defaultNavOpts);
 
 
 export default createAppContainer(MainNavigator);

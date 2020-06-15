@@ -13,13 +13,15 @@ import { fetchFonts } from './shared/utility';
 import { cartReducer } from './store/reducers/cartReducer';
 import { productsReducer } from './store/reducers/productReducer';
 import { ordersReducer } from './store/reducers/orderReducer';
+import { authReducer } from './store/reducers/authReducer';
 
 enableScreens();
 
 const rootReducer = combineReducers({
   rootProducts: productsReducer,
   rootCart: cartReducer,
-  rootOrders: ordersReducer
+  rootOrders: ordersReducer,
+  rootAuth: authReducer
 });
 
 const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
