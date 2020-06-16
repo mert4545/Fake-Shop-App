@@ -33,8 +33,8 @@ class CartScreen extends Component {
         this.props.onDeleteFromCart(allProducts, productId, userId);
     }
 
-    orderWarningHandler = (userId, products) => {
-        Alert.alert('', 'Are you sure you want to order these products?', [
+    orderWarningHandler = (userId, products, totalPrice) => {
+        Alert.alert('Order Confirmation', `Your checkout price is $ ${totalPrice.toFixed(2)}. Are you sure you want to order these products?`, [
             {
                 text: 'CANCEL'
             },
@@ -63,7 +63,7 @@ class CartScreen extends Component {
                         style={button}
                         disabled={!cart || cart.items.products.length === 0 ? true : false}
                         label="Order Now"
-                        onClick={this.orderWarningHandler.bind(this, cart.userId, cart.items.products)}
+                        onClick={this.orderWarningHandler.bind(this, cart.userId, cart.items.products, cart.items.totalPrice)}
                     />
                 </Card>
                 {

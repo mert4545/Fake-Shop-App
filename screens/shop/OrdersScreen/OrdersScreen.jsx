@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { FlatList, ActivityIndicator, View } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { FlatList, ActivityIndicator, View, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -7,6 +7,7 @@ import Button from '../../../shared/components/UI/Button/Button';
 import Card from '../../../shared/components/UI/Card/Card';
 import HeaderButton from '../../../shared/components/CustomHeaderButton/CustomHeaderButton';
 import Text from '../../../shared/components/UI/Text/Text';
+import OrderItem from '../../../components/OrderItem/OrderItem';
 
 import { styles } from './styles';
 import { Colors } from '../../../shared/utility';
@@ -27,27 +28,13 @@ class OrdersScreen extends Component {
         )
     });
 
-    state = {
-        isShowDetails: false
-    }
-
-    toggleDetailsDisplayhandler = () => {
-        this.setState(prevState => ({
-            isShowDetails: !prevState.isShowDetails
-        }));
-    }
-
     renderOrderProductsHandler = ({ item }) => {
-        const { btnContainer, card, text } = styles;
-
-        return (
-            <Card style={card}>
-                <Text style={text}>{`${item.quantity} x ${item.product.title}`}</Text>
-                <View style={btnContainer}>
-                    <Button label={`${this.state.isShowDetails ? 'Hide' : 'Show'} Details`} onClick={this.toggleDetailsDisplayhandler} />
-                </View>
-            </Card>
-        );
+        return <OrderItem
+            title={item.product.title}
+            quantity={item.quantity}
+            price={item.product.price}
+            orderDate={item.orderDate}
+        />;
     }
 
     componentDidMount() {

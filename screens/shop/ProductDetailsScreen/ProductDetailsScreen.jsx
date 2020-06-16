@@ -22,8 +22,8 @@ class ProductDetailsScreen extends Component {
         )
     });
 
-    addProductToCartHandler = (prodId, userId) => {
-        this.props.onAddToCart(prodId, userId);
+    addProductToCartHandler = (allProducts, prodId, userId) => {
+        this.props.onAddToCart(allProducts, prodId, userId);
     }
 
     render() {
@@ -35,7 +35,7 @@ class ProductDetailsScreen extends Component {
             description={displayedProduct.description}
             imageUrl={displayedProduct.imageUrl}
             price={displayedProduct.price}
-            onAddProduct={() => this.addProductToCartHandler(displayedProduct.id, displayedProduct.userId)}
+            onAddProduct={() => this.addProductToCartHandler(allProducts, displayedProduct.id, displayedProduct.userId)}
         />;
     }
 }
@@ -46,7 +46,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onAddToCart: (productId, userId) => dispatch(addToCart(productId, userId))
+    onAddToCart: (allProducts, productId, userId) => dispatch(addToCart(allProducts, productId, userId))
 });
 
 

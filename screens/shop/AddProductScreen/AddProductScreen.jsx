@@ -48,7 +48,7 @@ class AddProductScreen extends Component {
                 isValid: false
             },
             imageUrl: {
-                value: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstore.steelcase.com%2Fstorage%2Fbookcases-shelving%2Fcurrency-4-shelf-bookcase&psig=AOvVaw0mQ_e2NxOZl2xnhCn35PKT&ust=1591868271289000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJiMssn59ukCFQAAAAAdAAAAABAD',
+                value: '',
                 isValid: false
             },
             description: {
@@ -92,8 +92,18 @@ class AddProductScreen extends Component {
                 Alert.alert('Invalid Form Inputs', transformedErrorMessages, [{ text: 'OK' }]);
             } else {
                 const product = new Product(Math.random().toString(), userId, title.value, imageUrl.value, description.value, +price.value);
-                onAddProduct(product);
-                navigation.navigate('ProductsOverview');
+                Alert.alert('Add New Product', 'Are you sure you want to add this product?', [
+                    {
+                        text: 'CANCEL'
+                    },
+                    {
+                        text: 'OK',
+                        onPress: async () => {
+                            await onAddProduct(product);
+                            navigation.navigate('ProductsOverview');
+                        }
+                    }
+                ]);
             }
         });
     }

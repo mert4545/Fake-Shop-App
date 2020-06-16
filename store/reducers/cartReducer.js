@@ -15,11 +15,11 @@ const initialState = {  // set an initial state
 const add_to_cart = (state, action) => {
     const { productId, userId, allProducts } = action;
 
-    // try to find if "productId" and "userId" are valid and also they exist or not
-    if (!productId || !userId) return null;
+    // try to find if "productId" and "userId" are valid and also they exist or not. Also, (dummy) check for the existence and emptiness of "allProducts" 
+    if (!productId || !userId || !allProducts || allProducts.length === 0) return null;
 
-    const existingProduct = allProducts.find(prod => prod.id === productId);  // What if "previousOrders" is empty?!
-    if (!existingProduct) return;
+    const existingProduct = allProducts.find(prod => prod.id === productId);
+    if (!existingProduct) return null;
 
     const updatedCart = { ...state.cart };  // first, copy the existing "cart" state for immutable manipulation purpose
 
@@ -29,7 +29,8 @@ const add_to_cart = (state, action) => {
         updatedCart.items.products = [
             {
                 product: existingProduct,
-                quantity: 1
+                quantity: 1,
+                orderDate: new Date()  // add date of ordering
             }
         ];
         updatedCart.items.totalPrice = existingProduct.price;
@@ -40,24 +41,27 @@ const add_to_cart = (state, action) => {
             updatedCart.items.products = [
                 {
                     product: existingProduct,
-                    quantity: 1
+                    quantity: 1,
+                    orderDate: new Date()  // add date of ordering
                 }
             ];
-        } else if (!isProductPurchased) {  // s/he has not buy this product yet
-            const updatedUserProducts = [...updatedCart.items.products, {
+        } else if (!isProductPurchased) {  // s/he has existing products except for this product
+            const updatedUserProducts = [...updatedCart.items.products, {  // add the product to existing user cart products
                 product: existingProduct,
-                quantity: 1
+                quantity: 1,
+                orderDate: new Date()  // add date of ordering
             }];
-            updatedCart.items.products = updatedUserProducts;
+            updatedCart.items.products = updatedUserProducts;  // update user cart products
         }
 
         else {  // user has already purchased this product
             const existingProductIndex = updatedCart.items.products.findIndex(item => item.product.id === existingProduct.id);  // find index of that product
-            const updatedProduct = { ...updatedCart.items.products[existingProductIndex] };
-            updatedProduct.quantity++;
-            updatedCart.items.products[existingProductIndex] = updatedProduct;
+            const updatedProduct = { ...updatedCart.items.products[existingProductIndex] };  // first, copy the existing state of this product in user cart 
+            updatedProduct.quantity++;  // increment its quantity upon each "Add to Cart" button click
+            updatedProduct.orderDate = new Date();  // add date of ordering
+            updatedCart.items.products[existingProductIndex] = updatedProduct;  // immutably update the product inside user cart with its new state
         }
-        updatedCart.items.totalPrice += existingProduct.price;
+        updatedCart.items.totalPrice += existingProduct.price;  // also update total cart price
     }
 
     return updateState(state, {
@@ -68,11 +72,11 @@ const add_to_cart = (state, action) => {
 const delete_from_cart = (state, action) => {
     const { productId, userId, allProducts } = action;
 
-    // try to find if "productId" and "userId" are valid and also they exist or not
-    if (!productId || !userId) return;
+    // try to find if "productId" and "userId" are valid and also they exist or not. Also, (dummy) check for the existence and emptiness of "allProducts" 
+    if (!productId || !userId || !allProducts || allProducts.length === 0) return null;
 
-    const existingProduct = allProducts.find(prod => prod.id === productId);  // What if "previousOrders" is empty?!
-    if (!existingProduct) return;
+    const existingProduct = allProducts.find(prod => prod.id === productId);
+    if (!existingProduct) return null;
 
     const updatedCart = { ...state.cart };  // first, copy the existing "cart" state for immutable manipulation purpose
     const existingUser = updatedCart.userId;
