@@ -16,7 +16,7 @@ import { addToCart } from '../../../store/actions/cartActions';
 
 class ProductsOverviewScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerLeft: () => (  // place star icon to the right of the header
+        headerLeft: () => (  // place menu icon to the left of the header
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
                 <Item
                     title="Side Drawer Menu"
@@ -28,11 +28,11 @@ class ProductsOverviewScreen extends Component {
         )
     })
 
-    componentDidMount() {
+    componentDidMount() {  // fetch all products from database upon component mounting
         this.props.onFetchProducts();
     }
 
-    navigateToProductDetailHandler = id => {
+    navigateToProductDetailHandler = id => {  // used for button click event handler in Line-60
         this.props.navigation.navigate({
             routeName: 'ProductDetails',
             params: {
@@ -67,13 +67,13 @@ class ProductsOverviewScreen extends Component {
     render() {
         const { allProducts, loading, onFetchProducts, error } = this.props;
 
-        if (error)
+        if (error)  // render upon error occuring
             return <View style={styles.loading}>
                 <Text style={styles.text}>Error while loading products</Text>
                 <Button label="TRY AGAIN" onClick={onFetchProducts} />
             </View>;
 
-        let content = (
+        let content = (  // set default value of "content" variable to show a loading spinner while fetching products from database
             <View style={styles.loading}>
                 <ActivityIndicator color={Colors.text.primary} size="large" />
             </View>
@@ -85,7 +85,7 @@ class ProductsOverviewScreen extends Component {
                     <Text style={styles.text}>No products available</Text>
                 </View>
             );
-        } else if (!loading) {
+        } else if (!loading) {  // upon successfully fetching products from database
             content = allProducts && <FlatList
                 keyExtractor={item => item.id.toString()}
                 onRefresh={onFetchProducts}  // RefreshControl for "Pull to Refresh" functionality. If "Pull to Refresh" action is taken, products will be reloaded.
@@ -99,12 +99,14 @@ class ProductsOverviewScreen extends Component {
 }
 
 
+// Get Required State(s) from central store
 const mapStateToProps = state => ({
     allProducts: state.rootProducts.allProducts,
     error: state.rootProducts.error,
     loading: state.rootProducts.loading
 });
 
+// Get Required Action(s) from central store
 const mapDispatchToProps = dispatch => ({
     onFetchProducts: () => dispatch(fetchProducts()),
     onAddToCart: (allProducts, productId, userId) => dispatch(addToCart(allProducts, productId, userId))

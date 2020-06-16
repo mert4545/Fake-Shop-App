@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, TextInput, Alert } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 import Text from '../Text/Text';
 
 import { styles } from './styles';
 
 const FormInput = props => {
-    const { label, onChangeInput, maxLength, keyboardType, returnKeyType } = props;
+    const { label, onChangeInput, maxLength, keyboardType, returnKeyType, inputValue } = props;
     const { textContainer, text, inputText } = styles;
 
     return (
@@ -18,6 +18,7 @@ const FormInput = props => {
                 maxLength={maxLength && maxLength}
                 keyboardType={keyboardType}
                 returnKeyType={returnKeyType}
+                value={inputValue && inputValue}
             />
         </View>
     );

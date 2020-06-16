@@ -7,7 +7,7 @@ import Text from '../../shared/components/UI/Text/Text';
 
 import { styles } from './styles';
 
-const ProductItem = props => {
+const ProductItem = props => {  // this component will be used to render product details in ProductDetailsScreen
     const { description, imageUrl, price, title, onAddProduct } = props;
     const { card, imageContainer, image, detailContainer, buttonContainer, text } = styles;
 

@@ -9,9 +9,11 @@ import ProductItem from '../../../components/ProductItem/ProductItem';
 
 import { addToCart } from '../../../store/actions/cartActions';
 
+import { styles } from './styles';
+
 class ProductDetailsScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerRight: () => (  // place star icon to the right of the header
+        headerRight: () => (  // place cart icon to the right of the header
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
                 <Item
                     title="Add to Cart"
@@ -30,7 +32,12 @@ class ProductDetailsScreen extends Component {
         const { allProducts, navigation } = this.props;
         const displayedProduct = allProducts.find(prod => prod.id === navigation.getParam('productId'));
 
-        return <ProductItem
+        if (!displayedProduct)  // if an error occurs
+            return <View style={styles.loading}>
+                <Text style={styles.text}>Error while loading orders; possibly a network error. Please try again later.</Text>
+            </View>;
+
+        return <ProductItem  // in case no error, render Product Detail(s)
             title={displayedProduct.title}
             description={displayedProduct.description}
             imageUrl={displayedProduct.imageUrl}
@@ -41,10 +48,12 @@ class ProductDetailsScreen extends Component {
 }
 
 
+// Get Required State(s) from central store
 const mapStateToProps = state => ({
     allProducts: state.rootProducts.allProducts
 });
 
+// Get Required Action(s) from central store
 const mapDispatchToProps = dispatch => ({
     onAddToCart: (allProducts, productId, userId) => dispatch(addToCart(allProducts, productId, userId))
 });

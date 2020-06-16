@@ -30,7 +30,7 @@ class AuthenticateScreen extends Component {
     }
 
     inputTextChangedHandler = (id, inputText) => {
-        this.setState({
+        this.setState({  // update input field value
             formInputs: {
                 ...this.state.formInputs,
                 [id]: {
@@ -38,7 +38,7 @@ class AuthenticateScreen extends Component {
                     value: inputText
                 }
             }
-        }, () => {
+        }, () => {  // this callback is called after updating input field value in order to check its validity.
             this.setState({
                 formInputs: {
                     ...this.state.formInputs,
@@ -56,28 +56,28 @@ class AuthenticateScreen extends Component {
         const { email, password } = this.state.formInputs;
 
         this.setState({
-            formIsValid: email.isValid && password.isValid ? true : false
-        }, () => {
+            formIsValid: email.isValid && password.isValid ? true : false  // check if overall form is valid. 
+        }, () => {  // after checking form validity, trigger this callback function. (it is valid only when all input fields are individually valid)
             let errors;
-            if (this.state.formIsValid) return onAuthenticate(authType, userEmail, userPassword);
+            if (this.state.formIsValid) return onAuthenticate(authType, userEmail, userPassword);  // if overall form is valid, authenticate user
 
-            errors = authenticationFormErrors.reduce((allErrors, currentError) => {
+            errors = authenticationFormErrors.reduce((allErrors, currentError) => {  // if overall form is NOT valid,
                 if (!this.state.formInputs[currentError.id].isValid) {
-                    allErrors = [...allErrors, currentError.errorText];
+                    allErrors = [...allErrors, currentError.errorText];  // collect each respective error for each input field for which an invalid input is provided
                 }
                 return allErrors;
             }, []);
 
-            const transformedErrorMessages = errors.reduce((errMessage, err, index) => {
+            const transformedErrorMessages = errors.reduce((errMessage, err, index) => {  // extract only error messages from each error object
                 errMessage += `${index + 1}. ${err}\n\n`
                 return errMessage;
             }, '');
 
-            Alert.alert('Invalid Form Inputs', transformedErrorMessages, [{ text: 'OK' }]);
+            Alert.alert('Invalid Form Inputs', transformedErrorMessages, [{ text: 'OK' }]);  // alert user about all possible errors
         });
     }
 
-    switchAuthModeHandler = () => {
+    switchAuthModeHandler = () => {  // determine authentication mode for user. 
         if (this.state.authType === 'signup')
             return this.setState({
                 authType: 'login'
@@ -90,7 +90,7 @@ class AuthenticateScreen extends Component {
 
     componentDidUpdate(prevProps) {
         const { idToken, navigation } = this.props;
-        if (prevProps.idToken !== idToken) {
+        if (prevProps.idToken !== idToken) {  // whenever user has valid token and s/he has been authenticated, navigate user to Main page
             navigation.navigate('Shop');
         }
     }
@@ -105,7 +105,7 @@ class AuthenticateScreen extends Component {
                 {error && <Text style={{ color: '#000' }}>{errMessage}</Text>}
 
                 {
-                    authenticationFormErrors.map(err => (
+                    authenticationFormErrors.map(err => (  // render each form input field appropriately
                         <FormInput
                             key={err.errorText}
                             label={err.label}
@@ -135,13 +135,15 @@ class AuthenticateScreen extends Component {
 }
 
 
+// Get Required State(s) from central store
 const mapStateToProps = state => ({
     error: state.rootAuth.error,
     errMessage: state.rootAuth.errMessage,
     idToken: state.rootAuth.idToken,
     loading: state.rootAuth.loading
-})
+});
 
+// Get Required Action(s) from central store
 const mapDispatchToProps = dispatch => ({
     onAuthenticate: (authType, email, password) => dispatch(authenticate(authType, email, password))
 });

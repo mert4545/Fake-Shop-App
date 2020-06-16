@@ -17,7 +17,7 @@ import { styles } from './styles';
 
 class CartScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerLeft: () => (  // place star icon to the right of the header
+        headerLeft: () => (  // place menu icon to the left of the header
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
                 <Item
                     title="Side Drawer Menu"
@@ -29,25 +29,25 @@ class CartScreen extends Component {
         )
     });
 
-    deleteCartItemHandler = (allProducts, productId, userId) => {
+    deleteCartItemHandler = (allProducts, productId, userId) => {  // trigger upon clicking trash bin icon in "Cart" screen
         this.props.onDeleteFromCart(allProducts, productId, userId);
     }
 
-    orderWarningHandler = (userId, products, totalPrice) => {
+    orderWarningHandler = (userId, products, totalPrice) => {  // alert user just before placing orders
         Alert.alert('Order Confirmation', `Your checkout price is $ ${totalPrice.toFixed(2)}. Are you sure you want to order these products?`, [
             {
                 text: 'CANCEL'
             },
             {
                 text: 'OK',
-                onPress: this.addToOrdersHandler.bind(this, userId, products)
+                onPress: this.addToOrdersHandler.bind(this, userId, products)  // upon clicking 'OK' button, add add user specific orders. (User orders can be viewed in "View Orders" screen)
             }
         ]);
     }
 
-    addToOrdersHandler = (userId, products) => {
+    addToOrdersHandler = (userId, products) => {  // please check Line-43
         const { onClearCart, onAddOrders } = this.props;
-        onClearCart(userId);
+        onClearCart(userId);  // clear user cart upon placing order(s)
         onAddOrders(products);
     }
 
@@ -86,12 +86,14 @@ class CartScreen extends Component {
 }
 
 
+// Get Required State(s) from central store
 const mapStateToProps = state => ({
     allProducts: state.rootProducts.allProducts,
     cart: state.rootCart.cart,
     orders: state.rootOrders.orders
 });
 
+// Get Required Action(s) from central store
 const mapDispatchToProps = dispatch => ({
     onDeleteFromCart: (allProducts, productId, userId) => dispatch(deleteFromCart(allProducts, productId, userId)),
     onClearCart: userId => dispatch(clearCart(userId)),

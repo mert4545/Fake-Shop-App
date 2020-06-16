@@ -81,22 +81,22 @@ const delete_from_cart = (state, action) => {
     const updatedCart = { ...state.cart };  // first, copy the existing "cart" state for immutable manipulation purpose
     const existingUser = updatedCart.userId;
 
-    if (!existingUser) return;  // user has no cart and so no products purchased before.
+    if (!existingUser) return null;  // user has no cart and so no products purchased before.
 
     // if user has a non-empty cart, check if "existingProduct" is purchased before
     const isProductPurchased = updatedCart.items.products.some(element => element.product.id === existingProduct.id);
     // if user has a non-empty cart but has no products in it yet OR there are already products except for "existingProduct"
-    if (!updatedCart.items.products || updatedCart.items.products.length === 0 || !isProductPurchased) return;
+    if (!updatedCart.items.products || updatedCart.items.products.length === 0 || !isProductPurchased) return null;
 
     const existingProductIndex = updatedCart.items.products.findIndex(item => item.product.id === existingProduct.id);  // find index of that product
-    const updatedProduct = { ...updatedCart.items.products[existingProductIndex] };
+    const updatedProduct = { ...updatedCart.items.products[existingProductIndex] };  // first, copy the existing state of this product in user cart 
 
     const totalProductPrice = updatedProduct.product.price * updatedProduct.quantity;  // calculate total price of "existingProduct"
 
-    const reducedProducts = [...updatedCart.items.products];
-    reducedProducts.splice(existingProductIndex, 1);
+    const reducedProducts = [...updatedCart.items.products];   // first, copy the existing state of all available products in user cart 
+    reducedProducts.splice(existingProductIndex, 1);  // remove product from all user cart products
 
-    updatedCart.items.products = reducedProducts;
+    updatedCart.items.products = reducedProducts; // update user cart products
 
     updatedCart.items.totalPrice -= totalProductPrice;  // update price
 
@@ -107,18 +107,18 @@ const delete_from_cart = (state, action) => {
 
 const clear_cart = (state, action) => {
     const { userId } = action;
-    if (!userId) return;  // try to find if "userId" is valid and also it does exist or not
+    if (!userId) return null;  // try to find if "userId" is valid and also it does exist or not
 
-    const updatedCart = { ...state.cart };
+    const updatedCart = { ...state.cart };  // first, copy the existing "cart" state
     const existingUser = updatedCart.userId;
 
-    if (!existingUser) return;  // user has no cart.
+    if (!existingUser) return null;  // user has no cart.
 
-    const updatedCartItems = { ...updatedCart.items };
-    let updatedProducts = [...updatedCartItems.products];  // copy the existing products first
+    const updatedCartItems = { ...updatedCart.items };  // copy the existing cart items
+    let updatedProducts = [...updatedCartItems.products];  // copy the existing products
     updatedProducts = [];  // clear cart products
     updatedCartItems.totalPrice = 0;  // set totalPrice to 0
-    updatedCartItems.products = updatedProducts;
+    updatedCartItems.products = updatedProducts;  // update cart products
 
     updatedCart.items = updatedCartItems;
 

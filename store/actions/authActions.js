@@ -13,8 +13,6 @@ const authFail = errMessage => ({
 });
 
 
-
-
 // ========================== DEFINE SYNCHRONOUS ACTIONS ==========================
 const saveAuthData = (token, userId, expirationDate) => {
     AsyncStorage.setItem('userData', JSON.stringify({
