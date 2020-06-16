@@ -180,8 +180,8 @@ const ShopNavigator = createDrawerNavigator({
 
 
 const MainNavigator = createSwitchNavigator({
-    /* Startup: StartupScreen,
-    Authentication: AuthenticateStackNavigator, */
+    Startup: StartupScreen,
+    Authentication: AuthenticateStackNavigator,
     Shop: ShopNavigator
 }, defaultNavOpts);
 

@@ -13,15 +13,17 @@ const OrderItem = props => {
     const { btnContainer, card, headerText, text, textContainer, detailTextContainer } = styles;
     const [showDetails, setShowDetails] = useState(false);  // toggle state for each "Order Item"
 
+    const formattedDate = moment(orderDate).format('MMMM Do YYYY, hh:mm');
+
     const toggleShowDetailsHandler = useCallback(() => {  // create this function only once at component mounting thanks to "useCallback" hook
         setShowDetails(prevState => !prevState);  // toggle "showDetails" state between true and false 
     }, []);
 
-    return (
-        <Card style={{ ...card, height: showDetails ? 180 : 110 }}>  {/* upon showing details, extend "Card" height and upon hiding details, shrink it to height = 110 */}
+    return (  // upon showing details, extend "Card" height and upon hiding details, shrink it to height = 110
+        <Card style={{ ...card, height: showDetails ? 180 : 110 }}>
             <View style={textContainer}>
                 <Text style={headerText}>{`$ ${quantity * price.toFixed(2)}`}</Text>
-                <Text style={text}>{moment(orderDate).format('MMMM Do YYYY, hh:mm')}</Text>
+                <Text style={text}>{formattedDate}</Text>
             </View>
             <View style={btnContainer}>
                 <Button label={`${showDetails ? 'Hide' : 'Show'} Details`} onClick={toggleShowDetailsHandler} />
