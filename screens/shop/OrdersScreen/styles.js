@@ -4,11 +4,18 @@ import { Colors } from '../../../shared/utility';
 
 export const styles = StyleSheet.create({
     card: {
-        height: 80,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        height: 100,
+        //flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
         borderRadius: 5,
         paddingHorizontal: 15
+    },
+    btnContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 20,
+        width: '100%'
     },
     text: {
         color: Colors.text.primary

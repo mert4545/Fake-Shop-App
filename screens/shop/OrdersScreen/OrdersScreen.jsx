@@ -27,12 +27,25 @@ class OrdersScreen extends Component {
         )
     });
 
+    state = {
+        isShowDetails: false
+    }
+
+    toggleDetailsDisplayhandler = () => {
+        this.setState(prevState => ({
+            isShowDetails: !prevState.isShowDetails
+        }));
+    }
+
     renderOrderProductsHandler = ({ item }) => {
-        const { card, text } = styles;
+        const { btnContainer, card, text } = styles;
 
         return (
             <Card style={card}>
                 <Text style={text}>{`${item.quantity} x ${item.product.title}`}</Text>
+                <View style={btnContainer}>
+                    <Button label={`${this.state.isShowDetails ? 'Hide' : 'Show'} Details`} onClick={this.toggleDetailsDisplayhandler} />
+                </View>
             </Card>
         );
     }

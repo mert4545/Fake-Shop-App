@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -9,7 +9,7 @@ import Form from '../../../shared/components/Form/Form';
 import FormInput from '../../../shared/components/UI/FormInput/FormInput';
 import HeaderButton from '../../../shared/components/CustomHeaderButton/CustomHeaderButton';
 
-import { checkInputValidity } from '../../../shared/utility';
+import { checkInputValidity, addProductFormErrors } from '../../../shared/utility';
 
 import { addProduct } from '../../../store/actions/productActions';
 import Product from '../../../models/shop/product';
@@ -45,23 +45,19 @@ class AddProductScreen extends Component {
         formInputs: {
             title: {
                 value: '',
-                isValid: false,
-                touched: false
+                isValid: false
             },
             imageUrl: {
                 value: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstore.steelcase.com%2Fstorage%2Fbookcases-shelving%2Fcurrency-4-shelf-bookcase&psig=AOvVaw0mQ_e2NxOZl2xnhCn35PKT&ust=1591868271289000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJiMssn59ukCFQAAAAAdAAAAABAD',
-                isValid: false,
-                touched: false
+                isValid: false
             },
             description: {
                 value: '',
-                isValid: false,
-                touched: false
+                isValid: false
             },
             price: {
                 value: '',
-                isValid: false,
-                touched: false
+                isValid: false
             },
         },
         formIsValid: false
@@ -76,9 +72,30 @@ class AddProductScreen extends Component {
         const { navigation, onAddProduct, userId } = this.props;
         const { title, imageUrl, description, price } = this.state.formInputs;
 
-        const product = new Product(Math.random().toString(), userId, title.value, imageUrl.value, description.value, +price.value);
-        onAddProduct(product);
-        navigation.navigate('ProductsOverview');
+        this.setState({
+            formIsValid: title.isValid && imageUrl.isValid && description.isValid && price.isValid ? true : false
+        }, () => {
+            let errors;
+            if (!this.state.formIsValid) {
+                errors = addProductFormErrors.reduce((allErrors, currentError) => {
+                    if (!this.state.formInputs[currentError.id].isValid) {
+                        allErrors = [...allErrors, currentError.errorText];
+                    }
+                    return allErrors;
+                }, []);
+
+                const transformedErrorMessages = errors.reduce((errMessage, err, index) => {
+                    errMessage += `${index + 1}. ${err}\n\n`
+                    return errMessage;
+                }, '');
+
+                Alert.alert('Invalid Form Inputs', transformedErrorMessages, [{ text: 'OK' }]);
+            } else {
+                const product = new Product(Math.random().toString(), userId, title.value, imageUrl.value, description.value, +price.value);
+                onAddProduct(product);
+                navigation.navigate('ProductsOverview');
+            }
+        });
     }
 
     inputTextChangedHandler = (id, inputText) => {
@@ -91,10 +108,20 @@ class AddProductScreen extends Component {
                         value: inputText.includes(',') ? inputText.replace(/,/g, '.') : inputText
                     }
                 }
+            }, () => {  // this callback is called after updating input field value in order to check its validity.
+                this.setState({
+                    formInputs: {
+                        ...this.state.formInputs,
+                        [id]: {
+                            ...this.state.formInputs[id],
+                            isValid: checkInputValidity(id, this.state.formInputs[id].value)
+                        }
+                    }
+                })
             });
         }
 
-        return this.setState({
+        this.setState({
             formInputs: {
                 ...this.state.formInputs,
                 [id]: {
@@ -102,31 +129,16 @@ class AddProductScreen extends Component {
                     value: inputText
                 }
             }
-        });
-    }
-
-    inputLostFocusHandler = id => {
-        this.setState({
-            formInputs: {
-                ...this.state.formInputs,
-                [id]: {
-                    ...this.state.formInputs[id],
-                    isValid: checkInputValidity(id, this.state.formInputs[id].value),
-                    touched: true
+        }, () => {
+            this.setState({
+                formInputs: {
+                    ...this.state.formInputs,
+                    [id]: {
+                        ...this.state.formInputs[id],
+                        isValid: checkInputValidity(id, this.state.formInputs[id].value)
+                    }
                 }
-            }
-        });
-    }
-
-    inputFocusedHandler = id => {
-        this.setState({
-            formInputs: {
-                ...this.state.formInputs,
-                [id]: {
-                    ...this.state.formInputs[id],
-                    touched: false
-                }
-            }
+            })
         });
     }
 
@@ -134,54 +146,20 @@ class AddProductScreen extends Component {
 
         return (
             <Form>
-                <FormInput
-                    label="Title"
-                    errorTextHeader="Invalid Title"
-                    errorText="Title can not be less than 6 characters."
-                    touched={this.state.formInputs.title.touched}
-                    isValid={this.state.formInputs.title.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'title')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'title')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'title')}
-                    keyboardType="default"
-                    returnKeyType="next"
-                />
-                <FormInput
-                    label="Image URL"
-                    errorTextHeader="Invalid image URL"
-                    errorText="Please provide a valid URL."
-                    touched={this.state.formInputs.imageUrl.touched}
-                    isValid={this.state.formInputs.imageUrl.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'imageUrl')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'imageUrl')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'imageUrl')}
-                    keyboardType="default"
-                    returnKeyType="next"
-                />
-                <FormInput
-                    label="Description"
-                    errorTextHeader="Invalid Description"
-                    errorText="Description field cannot be left blank."
-                    touched={this.state.formInputs.description.touched}
-                    isValid={this.state.formInputs.description.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'description')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'description')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'description')}
-                    keyboardType="default"
-                    returnKeyType="next"
-                />
-                <FormInput
-                    label="Price"
-                    errorTextHeader="Invalid Price"
-                    errorText="Price can not be negative."
-                    touched={this.state.formInputs.price.touched}
-                    isValid={this.state.formInputs.price.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'price')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'price')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'price')}
-                    keyboardType="decimal-pad"
-                    returnKeyType="done"
-                />
+                {
+                    addProductFormErrors.map(err => (
+                        <FormInput
+                            key={err.errorText}
+                            label={err.label}
+                            errorTextHeader={err.errorTextHeader}
+                            errorText={err.errorText}
+                            isValid={this.state.formInputs[err.id].isValid}
+                            onChangeInput={this.inputTextChangedHandler.bind(this, err.id)}
+                            keyboardType={`${err.id === 'price' ? 'decimal-pad' : 'default'}`}
+                            returnKeyType={`${err.id === 'price' ? 'done' : 'next'}`}
+                        />
+                    ))
+                }
                 <Button label='ADD' onClick={this.addNewProductHandler} />
             </Form>
         );

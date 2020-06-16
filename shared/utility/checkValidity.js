@@ -16,10 +16,10 @@ export const checkInputValidity = (id, value) => {
         }
         return true;
     } else if (id === 'price') {
-        if (+value < 0) return false;
+        if (+value < 0 || !value || value.trim().length === 0) return false;
         return true;
     } else if (id === 'email') {  // note that use of special characters (e.g. !, _, - etc.) for email validation is not included in the regular expression for the sake of simplicity
-        const regExp = /^[A-Za-z][A-Za-z0-9]*@[A-Za-z]*\.[a-z\.]*$/;  //eslint-disable-line
+        const regExp = /^[A-Za-z][A-Za-z0-9]*@[A-Za-z]+\.[a-z\.]+$/;  //eslint-disable-line
         if (!value || value.trim().length === 0 || !regExp.test(value)) {
             return false;
         }
@@ -30,7 +30,7 @@ export const checkInputValidity = (id, value) => {
         const regExp3 = /[0-9]+/;  // check if password includes any digit 
         // check if password includes any special character
         const regExp4 = /[!@#\$%\^\&*+=\._-]+/;  //eslint-disable-line 
-        if (!value || value.trim().length === 0 || (!regExp1.test(value) && !regExp2.test(value) && !regExp3.test(value) && !regExp4.test(value))) {
+        if (!value || value.trim().length !== 8 || !regExp1.test(value) || !regExp2.test(value) || !regExp3.test(value) || !regExp4.test(value)) {
             return false;
         }
         return true;

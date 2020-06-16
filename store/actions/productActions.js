@@ -37,8 +37,6 @@ export const fetchProducts = () => {
 
         const token = getState().rootAuth.idToken;
 
-        console.log(`[productActions.js] token: ${token}`);
-
         try {
             const configOpts = {
                 url: `/products.json?auth=${token}`,

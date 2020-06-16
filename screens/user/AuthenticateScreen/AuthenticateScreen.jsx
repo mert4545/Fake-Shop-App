@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Alert } from 'react-native';
 import { connect } from 'react-redux';
 
 import Button from '../../../shared/components/UI/Button/Button';
@@ -9,7 +9,7 @@ import Text from '../../../shared/components/UI/Text/Text';
 
 import { styles } from './styles';
 
-import { checkInputValidity, Colors } from '../../../shared/utility';
+import { checkInputValidity, Colors, authenticationFormErrors } from '../../../shared/utility';
 
 import { authenticate } from '../../../store/actions/authActions';
 
@@ -18,13 +18,11 @@ class AuthenticateScreen extends Component {
         formInputs: {
             email: {
                 value: '',
-                isValid: false,
-                touched: false
+                isValid: false
             },
             password: {
                 value: '',
-                isValid: false,
-                touched: false
+                isValid: false
             }
         },
         formIsValid: false,
@@ -40,37 +38,43 @@ class AuthenticateScreen extends Component {
                     value: inputText
                 }
             }
-        });
-    }
-
-    inputLostFocusHandler = id => {
-        this.setState({
-            formInputs: {
-                ...this.state.formInputs,
-                [id]: {
-                    ...this.state.formInputs[id],
-                    isValid: checkInputValidity(id, this.state.formInputs[id].value),
-                    touched: true
+        }, () => {
+            this.setState({
+                formInputs: {
+                    ...this.state.formInputs,
+                    [id]: {
+                        ...this.state.formInputs[id],
+                        isValid: checkInputValidity(id, this.state.formInputs[id].value)
+                    }
                 }
-            }
+            })
         });
     }
 
-    inputFocusedHandler = id => {
-        this.setState({
-            formInputs: {
-                ...this.state.formInputs,
-                [id]: {
-                    ...this.state.formInputs[id],
-                    touched: false
-                }
-            }
-        });
-    }
-
-    authenticateUserHandler = (authType, email, password) => {
+    authenticateUserHandler = (authType, userEmail, userPassword) => {
         const { onAuthenticate } = this.props;
-        onAuthenticate(authType, email, password);
+        const { email, password } = this.state.formInputs;
+
+        this.setState({
+            formIsValid: email.isValid && password.isValid ? true : false
+        }, () => {
+            let errors;
+            if (this.state.formIsValid) return onAuthenticate(authType, userEmail, userPassword);
+
+            errors = authenticationFormErrors.reduce((allErrors, currentError) => {
+                if (!this.state.formInputs[currentError.id].isValid) {
+                    allErrors = [...allErrors, currentError.errorText];
+                }
+                return allErrors;
+            }, []);
+
+            const transformedErrorMessages = errors.reduce((errMessage, err, index) => {
+                errMessage += `${index + 1}. ${err}\n\n`
+                return errMessage;
+            }, '');
+
+            Alert.alert('Invalid Form Inputs', transformedErrorMessages, [{ text: 'OK' }]);
+        });
     }
 
     switchAuthModeHandler = () => {
@@ -100,31 +104,20 @@ class AuthenticateScreen extends Component {
             <Form>
                 {error && <Text style={{ color: '#000' }}>{errMessage}</Text>}
 
-                <FormInput
-                    label="Email"
-                    errorTextHeader="Invalid Email"
-                    errorText="Please enter a valid email address."
-                    touched={this.state.formInputs.email.touched}
-                    isValid={this.state.formInputs.email.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'email')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'email')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'email')}
-                    keyboardType="email-address"
-                    returnKeyType="next"
-                />
-                <FormInput
-                    label="Password"
-                    errorTextHeader="Invalid Password"
-                    errorText="Password should include at least one capital letter, small letter, digit and special character and at least be 8 characters long."
-                    touched={this.state.formInputs.password.touched}
-                    isValid={this.state.formInputs.password.isValid}
-                    onChangeInput={this.inputTextChangedHandler.bind(this, 'password')}
-                    onBlurInput={this.inputLostFocusHandler.bind(this, 'password')}
-                    onFocusInput={this.inputFocusedHandler.bind(this, 'password')}
-                    keyboardType="default"
-                    secureTextEntry={true}
-                    returnKeyType="done"
-                />
+                {
+                    authenticationFormErrors.map(err => (
+                        <FormInput
+                            key={err.errorText}
+                            label={err.label}
+                            errorTextHeader={err.errorTextHeader}
+                            errorText={err.errorText}
+                            isValid={this.state.formInputs[err.id].isValid}
+                            onChangeInput={this.inputTextChangedHandler.bind(this, err.id)}
+                            keyboardType={`${err.id === 'email' ? 'email-address' : 'default'}`}
+                            returnKeyType={`${err.id === 'password' ? 'done' : 'next'}`}
+                        />
+                    ))
+                }
                 <View style={buttonContainer}>
                     {loading ? <ActivityIndicator size="large" color={Colors.primary} /> : <Button
                         style={button}

@@ -6,7 +6,7 @@ import Text from '../Text/Text';
 import { styles } from './styles';
 
 const FormInput = props => {
-    const { errorTextHeader, errorText, isValid, label, onChangeInput, onBlurInput, onFocusInput, touched, maxLength, keyboardType, returnKeyType } = props;
+    const { label, onChangeInput, maxLength, keyboardType, returnKeyType } = props;
     const { textContainer, text, inputText } = styles;
 
     return (
@@ -15,13 +15,10 @@ const FormInput = props => {
             <TextInput
                 style={inputText}
                 onChangeText={onChangeInput}
-                onBlur={onBlurInput}
-                onFocus={onFocusInput}
                 maxLength={maxLength && maxLength}
                 keyboardType={keyboardType}
                 returnKeyType={returnKeyType}
             />
-            {touched && !isValid && Alert.alert(errorTextHeader, errorText, [{ text: 'OK' }])}
         </View>
     );
 };
