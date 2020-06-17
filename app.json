@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "rn-shop-app",
-    "slug": "rn-shop-app",
+    "name": "Online Shop Demo",
+    "slug": "online-shop-demo",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,7 +21,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.mert.online-shop-demo",
+      "buildNumber": "1.0.1",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.mert.online_shop_demo",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/cart_icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "splash": {
+        "image": "./assets/cart_icon.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#ffffff"
+      }
     }
   }
 }

@@ -16,7 +16,7 @@ class StartupScreen extends Component {  // this screen will be used as a transi
 
         const userData = await AsyncStorage.getItem('userData');  // get stored user data from storage
         if (!userData) {  // upon invalid user credentials, redirect user to authentication form page
-            navigation.navigate('Auth');
+            navigation.navigate('Authentication');
             return;
         }
         const transformedUserData = JSON.parse(userData);
@@ -24,7 +24,7 @@ class StartupScreen extends Component {  // this screen will be used as a transi
 
         const expDate = new Date(expirationDate);
         if (expDate <= new Date() || !token || !userId) {  // if token is NOT valid and its validation date expires or invalid token/userId are obtained from storage
-            navigation.navigate('Auth'); // redirect user to authentication form page
+            navigation.navigate('Authentication'); // redirect user to authentication form page
             return;
         }
 
