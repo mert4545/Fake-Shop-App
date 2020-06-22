@@ -30,7 +30,7 @@ export const checkInputValidity = (id, value) => {
         const regExp3 = /[0-9]+/;  // check if password includes any digit 
         // check if password includes any special character
         const regExp4 = /[!@#\$%\^\&*+=\._-]+/;  //eslint-disable-line 
-        if (!value || value.trim().length !== 8 || !regExp1.test(value) || !regExp2.test(value) || !regExp3.test(value) || !regExp4.test(value)) {
+        if (!value || value.trim().length < 8 || !regExp1.test(value) || !regExp2.test(value) || !regExp3.test(value) || !regExp4.test(value)) {
             return false;
         }
         return true;
